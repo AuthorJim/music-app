@@ -5,6 +5,18 @@
 </template>
 
 <script>
+import { getRecommend } from "api/recommend";
+
+export default {
+	data () {
+		return {
+			
+		}
+	},
+	created () {
+		getRecommend()
+	}
+}
 	
 </script>
 
@@ -19,7 +31,7 @@
     .recommend-content
       height: 100%
       overflow: hidden
-      .slider-wrakpper
+      .slider-wrapper
         position: relative
         width: 100%
         overflow: hidden
