@@ -7,11 +7,11 @@ import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 
 // 引入样式文件
-import 'source/css/index.styl'
+import 'common/stylus/index.styl'
 
 // 设置图片懒加载
 Vue.use(VueLazyload, {
-	loading: require('source/image/default.png'),
+	loading: require('common/image/default.png'),
 	attempt: 1
 })
 
