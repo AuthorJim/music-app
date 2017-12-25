@@ -3,8 +3,21 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import fastclick from 'fastclick'
+import VueLazyload from 'vue-lazyload'
+
+// 引入样式文件
+import 'source/css/index.styl'
+
+// 设置图片懒加载
+Vue.use(VueLazyload, {
+	loading: require('source/image/default.png'),
+	attempt: 1
+})
 
 Vue.config.productionTip = false
+
+// 消除移动端点击300ms延迟问题
 
 /* eslint-disable no-new */
 new Vue({
