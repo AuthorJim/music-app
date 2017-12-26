@@ -11,32 +11,47 @@
 				</Slider>
 			</div>
 			<div class="recommend-list">
-				<h2 class="list-title"></h2>
-				<div class="item"></div>
+				<h2 class="list-title">热门歌单推荐</h2>
+				<div class="item" v-for="item in musicList">
+					<img class="icon" v-lazy="item.imgurl" alt="">
+					<div class="text">
+						<h2 class="name">{{item.creator.name}}</h2>
+						<p class="desc">{{item.dissname}}</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import { getRecommend } from "api/recommend";
+import { getRecommend, getMusic } from "api/recommend";
 import { ERR_OK } from "api/config";
 import Slider from "base/slider/slider";
 
 export default {
 	data () {
 		return {
-			sliders: []
+			sliders: [],
+			musicList: []
 		}
 	},
 	created () {
 		this.getRecommendList()
+		this.getMusicList()
 	},
 	methods: {
 		getRecommendList() {
 			getRecommend().then(res => {
 				if (res.code === ERR_OK) {
 					this.sliders = res.data.slider
+				}
+			})
+		},
+		getMusicList() {
+			getMusic().then(res => {
+				if (res.code === ERR_OK) {
+					this.musicList = res.data.list
 				}
 			})
 		}

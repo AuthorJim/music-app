@@ -7,6 +7,9 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+const express = require('express')
+const apiRoutes = express.Router()
+const axios = require('axios')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -35,7 +38,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
-    }
+		},
+		before(apiRoutes) {
+			apiRoutes.get('/getDiscList', (req, res) => {
+				const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+				axios.get(url, {
+					params: req.query,
+					headers: {
+						host: 'c.y.qq.com',
+						referer: 'https://c.y.qq.com'
+					}
+				}).then(response => {
+					res.json(response.data)
+				}).catch(err => {
+					console.log(err)
+				})
+			})
+		}
   },
   plugins: [
     new webpack.DefinePlugin({
