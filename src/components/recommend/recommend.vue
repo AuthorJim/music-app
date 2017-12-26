@@ -1,26 +1,28 @@
 <template>
 	<div class="recommend">
-		<div class="recommend-content">
-			<div class="slider-wrapper">
-				<Slider v-if="sliders.length > 0">
-					<div v-for="slider in sliders">
-						<a :href="slider.linkUrl">
-							<img :src="slider.picUrl" alt="">
-						</a>
-					</div>
-				</Slider>
-			</div>
-			<div class="recommend-list">
-				<h2 class="list-title">热门歌单推荐</h2>
-				<div class="item" v-for="item in musicList">
-					<img class="icon" v-lazy="item.imgurl" alt="">
-					<div class="text">
-						<h2 class="name">{{item.creator.name}}</h2>
-						<p class="desc">{{item.dissname}}</p>
+		<scroll class="recommend-content" :data="musicList" ref="scroll">
+			<div>
+				<div class="slider-wrapper" v-if="sliders.length > 0">
+					<Slider>
+						<div v-for="slider in sliders">
+							<a :href="slider.linkUrl">
+								<img :src="slider.picUrl" alt="" @load="imageLoad">
+							</a>
+						</div>
+					</Slider>
+				</div>
+				<div class="recommend-list">
+					<h2 class="list-title">热门歌单推荐</h2>
+					<div class="item" v-for="item in musicList">
+						<img class="icon" v-lazy="item.imgurl" alt="">
+						<div class="text">
+							<h2 class="name">{{item.creator.name}}</h2>
+							<p class="desc">{{item.dissname}}</p>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</scroll>
 	</div>
 </template>
 
@@ -28,6 +30,7 @@
 import { getRecommend, getMusic } from "api/recommend";
 import { ERR_OK } from "api/config";
 import Slider from "base/slider/slider";
+import Scroll from "base/scroll/scroll";
 
 export default {
 	data () {
@@ -54,10 +57,17 @@ export default {
 					this.musicList = res.data.list
 				}
 			})
+		},
+		imageLoad() {
+			if (!this.isLoad) {
+				this.isLoad = true
+				this.$refs.scroll.refresh()
+			}
 		}
 	},
 	components: {
-		Slider
+		Slider,
+		Scroll
 	}
 }
 	
