@@ -1,12 +1,16 @@
 <template>
 	<div class="singer">
-		<listview :singers="singers"></listview>
+		<listview :singers="singers" @selected="selected"></listview>
+		<keep-alive>
+			<router-view></router-view>
+		</keep-alive>
 	</div>
 </template>
 
 <script>
 import { getSinger } from "api/singer";
 import { ERR_OK } from "api/config";
+import { mapMutations } from "vuex";
 import Singer from "common/js/singer";
 import Listview from "base/listview/listview";
 
@@ -27,11 +31,15 @@ export default {
       getSinger().then(res => {
         if (res.code === ERR_OK) {
 					this.singers = this._normalizeSinger(res.data.list);
-					// console.log(this.singers);
-					
         }
       });
-    },
+		},
+		selected(item) {
+			this.$router.push({
+				path: `/singer/${item.id}`
+			})
+			this.setSinger(item)
+		},
     _normalizeSinger(list) {
       let map = {
         hot: {
@@ -74,7 +82,10 @@ export default {
       }
       ret.sort((a, b) => a.title.charCodeAt(0) - b.title.charCodeAt(0));
       return hot.concat(ret);
-    }
+		},
+		...mapMutations({
+			setSinger: 'SET_SINGER'
+		})
 	},
 	components: {
 		Listview

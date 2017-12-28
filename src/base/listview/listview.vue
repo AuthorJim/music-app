@@ -3,7 +3,7 @@
     <ul>
       <li class="list-group" v-for="singer in singers" ref="listGroup">
         <h2 class="list-group-title" ref="listTitle">{{singer.title}}</h2>
-        <div class="list-group-item" v-for="list in singer.item">
+        <div class="list-group-item" v-for="list in singer.item" @click="selectItem(list)">
           <img class="avatar" v-lazy="list.avatar">
           <div class="name">{{list.name}}</div>
         </div>
@@ -83,9 +83,10 @@ export default {
       }, 20);
     },
     diff(newDiff) {
-			let fixedTop = (newDiff > 0 && newDiff < TITLE_HEIGHT) ? newDiff - TITLE_HEIGHT : 0
-			console.log(fixedTop);
-			
+      let fixedTop =
+        newDiff > 0 && newDiff < TITLE_HEIGHT ? newDiff - TITLE_HEIGHT : 0;
+      console.log(fixedTop);
+
       if (this.fixedTop === fixedTop) return;
       this.fixedTop = fixedTop;
       this.$refs.fixedTop.style.transform = `translate3d(0, ${fixedTop}px, 0)`;
@@ -106,7 +107,11 @@ export default {
     },
     scroll(pos) {
       this.scrollY = pos.y;
-    },
+		},
+		// 向外传递当前被点击的歌手id
+		selectItem(item) {
+			this.$emit('selected', item)
+		},
     _scrollTo(index) {
       index = parseInt(index);
       this.scrollY = -this.listHeight[index];
