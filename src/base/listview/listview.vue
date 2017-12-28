@@ -85,8 +85,6 @@ export default {
     diff(newDiff) {
       let fixedTop =
         newDiff > 0 && newDiff < TITLE_HEIGHT ? newDiff - TITLE_HEIGHT : 0;
-      console.log(fixedTop);
-
       if (this.fixedTop === fixedTop) return;
       this.fixedTop = fixedTop;
       this.$refs.fixedTop.style.transform = `translate3d(0, ${fixedTop}px, 0)`;
@@ -107,11 +105,11 @@ export default {
     },
     scroll(pos) {
       this.scrollY = pos.y;
-		},
-		// 向外传递当前被点击的歌手id
-		selectItem(item) {
-			this.$emit('selected', item)
-		},
+    },
+    // 向外传递当前被点击的歌手id
+    selectItem(item) {
+      this.$emit("selected", item);
+    },
     _scrollTo(index) {
       index = parseInt(index);
       this.scrollY = -this.listHeight[index];
