@@ -55,8 +55,6 @@ export default {
 			this._trigglePercent()	
 		},
 		progressClick(e) {
-			console.log(e);
-			
 			this._setOffset(e.offsetX)
 			this._trigglePercent()
 		},
