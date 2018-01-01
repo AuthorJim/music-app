@@ -1,73 +1,73 @@
 <template>
-	<div class="player" v-show="playlist.length > 0">
-		<transition name="normal" @enter="enter" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave">
-			<div class="normal-player" v-show="fullScreen">
-				<div class="background">
-					<img :src="currentSong.image" alt="" width="100%" height="100%">
-				</div>
-				<div class="top">
-					<div class="back" @click="minimize">
-						<i class="icon-back"></i>
-					</div>
-					<h2 class="title">{{currentSong.name}}</h2>
-					<h3 class="subtitle">{{currentSong.singer}}</h3>
-				</div>
-				<div class="middle">
-					<div class="middle-l">
-						<div class="cd-wrapper" ref="cdWrapper">
-							<div class="cd" :class="cdCls">
-								<img :src="currentSong.image" class="image" alt="">
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="bottom">
-					<div class="progress-wrapper">
-						<div class="time time-l">{{_normalizeDuration(currentTime)}}</div>
-						<div class="progress-bar-wrapper">
-							<progress-bar></progress-bar>
-						</div>
-						<div class="time time-r">{{_normalizeDuration(currentSong.duration)}}</div>
-					</div>
-					<div class="operators">
-						<div class="icon i-left">
-							<i class="icon-sequence"></i>
-						</div>
-						<div class="icon i-left">
-							<i class="icon-prev"></i>
-						</div>
-						<div class="icon i-center" @click="togglePlay">
-							<i :class="iconCls"></i>
-						</div>
-						<div class="icon i-right">
-							<i class="icon-next"></i>
-						</div>
-						<div class="icon i-right">
-							<i class="icon icon-not-favorite"></i>
-						</div>
-					</div>
-				</div>
-			</div>
-		</transition>
-		<transition name="mini">
-			<div class="mini-player" @click="maximize" v-show="!fullScreen">
-				<div class="icon">
-					<img :src="currentSong.image" class="img" width="40" height="40" alt="">
-				</div>
-				<div class="text">
-					<h2 class="name">{{currentSong.name}}</h2>
-					<p class="desc">{{currentSong.singer}}</p>
-				</div>
-				<div class="control" @click.stop="togglePlay">
-					<i class="icon-mini" :class="miniPlayIcon"></i>
-				</div>
-				<div class="control" @click="togglePlay">
-					<i class="icon-playlist"></i>
-				</div>
-			</div>
-		</transition>
-		<audio :src="currentSong.url" ref="audio" @play="ready" @error="error" @timeupdate="updateTime"></audio>
-	</div>
+  <div class="player" v-show="playlist.length > 0">
+    <transition name="normal" @enter="enter" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave">
+      <div class="normal-player" v-show="fullScreen" ref="normalPlayer">
+        <div class="background">
+          <img :src="currentSong.image" alt="" width="100%" height="100%">
+        </div>
+        <div class="top">
+          <div class="back" @click="minimize">
+            <i class="icon-back"></i>
+          </div>
+          <h2 class="title">{{currentSong.name}}</h2>
+          <h3 class="subtitle">{{currentSong.singer}}</h3>
+        </div>
+        <div class="middle">
+          <div class="middle-l">
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd" :class="cdCls">
+                <img :src="currentSong.image" class="image" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="progress-wrapper">
+            <div class="time time-l">{{_normalizeDuration(currentTime)}}</div>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent" @percentChange="resetPercent"></progress-bar>
+            </div>
+            <div class="time time-r">{{_normalizeDuration(currentSong.duration)}}</div>
+          </div>
+          <div class="operators">
+            <div class="icon i-left">
+              <i class="icon-sequence"></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-prev" @click="prev"></i>
+            </div>
+            <div class="icon i-center" @click="togglePlay">
+              <i :class="iconCls"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon-next" @click="next"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon icon-not-favorite"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <transition name="mini">
+      <div class="mini-player" @click="maximize" v-show="!fullScreen">
+        <div class="icon">
+          <img :src="currentSong.image" class="img" width="40" height="40" alt="">
+        </div>
+        <div class="text">
+          <h2 class="name">{{currentSong.name}}</h2>
+          <p class="desc">{{currentSong.singer}}</p>
+        </div>
+        <div class="control" @click.stop="togglePlay">
+          <i class="icon-mini" :class="miniPlayIcon"></i>
+        </div>
+        <div class="control" @click="togglePlay">
+          <i class="icon-playlist"></i>
+        </div>
+      </div>
+    </transition>
+    <audio :src="currentSong.url" ref="audio" @play="ready" @ended="endSong" @error="error" @timeupdate="updateTime"></audio>
+  </div>
 </template>
 
 <script>
@@ -87,11 +87,20 @@ export default {
     },
     iconCls() {
       return this.playing ? "icon-play" : "icon-pause";
+    },
+    miniPlayIcon() {
+      return this.playing ? "icon-play-mini" : "icon-pause-mini";
 		},
-		miniPlayIcon() {
-			return this.playing ? "icon-play-mini" : "icon-pause-mini";
+		percent() {
+			return this.currentTime / this.currentSong.duration
 		},
-    ...mapGetters(["fullScreen", "currentSong", "playlist", "playing"])
+    ...mapGetters([
+      "fullScreen",
+      "currentSong",
+      "playlist",
+      "playing",
+      "currentIndex"
+    ])
   },
   watch: {
     currentSong() {
@@ -106,17 +115,41 @@ export default {
       this.$nextTick(() => {
         newPlaying ? audio.play() : audio.pause();
       });
-    }
+		}
   },
   methods: {
+		// audio播放相关
+		endSong() {
+			this.next()
+		},
     ready() {},
-    error() {},
+		error() {},
+		// 获取播放时间
+		updateTime(e) {
+			this.currentTime = e.target.currentTime
+		},
+    // 下一首
+    next() {
+      this.currentIndex === this.playlist.length - 1
+        ? this.setCurrentIndex(0)
+        : this.setCurrentIndex(this.currentIndex + 1);
+    },
+    // 上一首
+    prev() {
+      this.currentIndex === 0
+        ? this.setCurrentIndex(this.playlist.length - 1)
+        : this.setCurrentIndex(this.currentIndex - 1);
+    },
     togglePlay() {
       this.setPlaying(!this.playing);
-    },
-    updateTime() {},
+		},
+		resetPercent(percent) {
+			this.$refs.audio.currentTime = this.currentSong.duration * percent
+			this.playing ? '' : this.togglePlay()
+		},
     minimize() {
       this.setFullScreen(false);
+      this.$refs.normalPlayer.style.display = "none";
     },
     maximize() {
       this.setFullScreen(true);
@@ -141,39 +174,42 @@ export default {
         animation,
         presets: {
           duration: 400,
-          easing: "linear",
+          easing: "linear"
         }
-			});
-			
-			animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+      });
+
+      animations.runAnimation(this.$refs.cdWrapper, "move", done);
     },
     afterEnter() {
-			animations.unregisterAnimation('move')
-			this.$refs.cdWrapper.style.animation = ''
-		},
-    leave(el, done) {
-			this.$refs.cdWrapper.style.transition = 'all 0.4s'
-			const { x, y, scale } = this._getPosAndScale();
-			this.$refs.cdWrapper.style.transform = `translate(${x}px, ${y}px, 0) scale${scale}`
-			this.$refs.cdWrapper.addEventListener('transitionend', done)
-		},
-    afterLeave() {
-			this.$refs.cdWrapper.style.animation = ''
-			this.$refs.cdWrapper.style.transform = ''
-		},
-    _normalizeDuration(time) {
-      time = time || 0;
-      const minute = Math.floor(time / 60 || 0);
-      const second = this._pad(time % 60);
-      return `${minute}:${second}`;
+      animations.unregisterAnimation("move");
+      this.$refs.cdWrapper.style.animation = "";
     },
-    _pad(num, n = 2) {
-      let len = num.toString().length;
-      while (len < n) {
-        num = `0${num}`;
-        len++;
+    leave(el, done) {
+      this.$refs.cdWrapper.style.transition = "all 0.4s";
+      const { x, y, scale } = this._getPosAndScale();
+      this.$refs.cdWrapper.style.transform = `translate(${x}px, ${y}px, 0) scale${scale}`;
+      this.$refs.cdWrapper.addEventListener("transitionend", done);
+    },
+    afterLeave() {
+      this.$refs.cdWrapper.style.animation = "";
+      this.$refs.cdWrapper.style.transform = "";
+    },
+    _normalizeDuration(time) {
+      let hour, minute, second;
+      second = Math.floor(time % 60);
+      let delta = Math.floor(time / 60);
+      if (delta >= 60) {
+        hour = Math.floor(delta / 60);
+        minute = Math.floor(delta % 60);
+      } else {
+        minute = delta;
       }
-      return num;
+      if (hour) {
+        hour = hour >= 10 ? hour : `0${hour}`;
+      }
+      minute = minute >= 10 ? minute : `0${minute}`;
+      second = second >= 10 ? second : `0${second}`;
+      return hour ? `${hour}:${minute}:${second}` : `${minute}:${second}`;
     },
     // 获取动画改变时的位置与缩放
     _getPosAndScale() {
@@ -185,11 +221,16 @@ export default {
       const scale = targetWidth / width;
       const x = -(window.innerWidth / 2 - paddingLeft);
       const y = window.innerHeight - paddingTop - paddingBottom - width / 2;
-      return { x, y, scale };
+      return {
+        x,
+        y,
+        scale
+      };
     },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
-      setPlaying: "SET_PLAYING_STATE"
+      setPlaying: "SET_PLAYING_STATE",
+      setCurrentIndex: "SET_CURRENT_INDEX"
     })
   },
   components: {
@@ -537,10 +578,10 @@ export default {
 			}
 
 			.icon-mini {
-				// font-size: 32px;
-				// position: absolute;
-				// left: 0;
-				// top: 0;
+				// font-size: 32px
+				// position: absolute
+				// left: 0
+				// top: 0
 			}
 		}
 	}
@@ -556,5 +597,3 @@ export default {
 	}
 }
 </style>
-
-
