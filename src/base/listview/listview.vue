@@ -91,6 +91,9 @@ export default {
     }
   },
   methods: {
+		refresh() {
+			this.$refs.listview.refresh( )
+		},
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, "index");
       this.touch.y1 = e.touches[0].pageY;

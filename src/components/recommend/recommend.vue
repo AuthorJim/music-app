@@ -1,5 +1,5 @@
 <template>
-	<div class="recommend">
+	<div class="recommend" ref="recommend">
 		<scroll class="recommend-content" :data="musicList" ref="scroll">
 			<div>
 				<div class="slider-wrapper" v-if="sliders.length > 0">
@@ -33,49 +33,55 @@
 import { getRecommend, getMusic } from "api/recommend";
 import { ERR_OK } from "api/config";
 import Slider from "base/slider/slider";
-import Scroll from "base/scroll/scroll";	
+import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
+import { playlistMixin } from "common/js/mixin";
 
 export default {
-	data () {
-		return {
-			sliders: [],
-			musicList: []
-		}
-	},
-	created () {
-		this.getRecommendList()
-		this.getMusicList()
-	},
-	methods: {
-		getRecommendList() {
-			getRecommend().then(res => {
-				if (res.code === ERR_OK) {
-					this.sliders = res.data.slider
-				}
-			})
-		},
-		getMusicList() {
-			getMusic().then(res => {
-				if (res.code === ERR_OK) {
-					this.musicList = res.data.list
-				}
-			})
-		},
-		imageLoad() {
-			if (!this.isLoad) {
-				this.isLoad = true
-				this.$refs.scroll.refresh()
-			}
-		}
-	},
-	components: {
-		Slider,
-		Scroll,
-		Loading
-	}
-}
-	
+  mixins: [playlistMixin],
+  data() {
+    return {
+      sliders: [],
+      musicList: []
+    };
+  },
+  created() {
+    this.getRecommendList();
+    this.getMusicList();
+  },
+  methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : 0;
+      this.$refs.recommend.style.bottom = bottom;
+      this.$refs.scroll.refresh();
+    },
+    getRecommendList() {
+      getRecommend().then(res => {
+        if (res.code === ERR_OK) {
+          this.sliders = res.data.slider;
+        }
+      });
+    },
+    getMusicList() {
+      getMusic().then(res => {
+        if (res.code === ERR_OK) {
+          this.musicList = res.data.list;
+        }
+      });
+    },
+    imageLoad() {
+      if (!this.isLoad) {
+        this.isLoad = true;
+        this.$refs.scroll.refresh();
+      }
+    }
+  },
+  components: {
+    Slider,
+    Scroll,
+    Loading
+  }
+};
 </script>
 
 <style lang="stylus" scoped>
@@ -89,7 +95,7 @@ export default {
 	.recommend-content
 		height: 100%
 		overflow: hidden
-		.slider-wrapper
+		.slider-wrakpper
 			position: relative
 			width: 100%
 			overflow: hidden
