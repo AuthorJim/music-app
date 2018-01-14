@@ -54,6 +54,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 					console.log(err)
 				})
 			})
+			apiRoutes.get('/getcdList', (req, res) => {
+				const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+				axios.get(url, {
+					params: req.query,
+					headers: {
+						host: 'c.y.qq.com',
+						referer: 'https://c.y.qq.com'
+					}
+				}).then(response => {
+					res.json(response.data)
+				}).catch(err => {
+					console.log(err)
+				})
+			})
 			apiRoutes.get('/lyric', (req, res) => {
 				const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
 				axios.get(url, {

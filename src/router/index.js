@@ -12,7 +12,13 @@ export default new Router({
 		{
 			path: '/recommend',
 			name: 'recommend',
-			component: resolve => require(['components/recommend/recommend'], resolve)
+			component: resolve => require(['components/recommend/recommend'], resolve),
+			children: [
+				{
+					path: ':id',
+					component: resolve => require(['components/disc/disc'], resolve)
+				}
+			]
 		},
 		{
 			path: '/singer',
