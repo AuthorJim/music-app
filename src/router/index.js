@@ -34,7 +34,13 @@ export default new Router({
 		{
 			path: '/rank',
 			name: 'rank',
-			component: resolve => require(['components/rank/rank'], resolve)
+			component: resolve => require(['components/rank/rank'], resolve),
+			children: [
+				{
+					path: ':id',
+					component: resolve => require(['components/top-list/top-list'], resolve)
+				}
+			]
 		},
 		{
 			path: '/search',
